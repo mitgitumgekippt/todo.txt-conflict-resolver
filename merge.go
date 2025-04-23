@@ -34,12 +34,13 @@ func openFile(filename string) []string {
 	return lines
 }
 
-func mergeFiles(lines0 []string, lines1 []string, lines2 []string) []string {
+func mergeFiles(lines0 []string, lines1 []string, lines2 []string) ([]string, []string) {
 	// Naive algorithm, which assumes the presence of the backupfile and that no entry was deleted
 
 	// Cases if content differs
 	minsize := min(len(lines0), len(lines1), len(lines2))
 	var mergedLines []string
+	var proposedChanges []string
 	for i := range minsize {
 		if lines0[i] == lines1[i] && lines0[i] == lines2[i] {
 			// Case 0: Content is the same
@@ -47,9 +48,13 @@ func mergeFiles(lines0 []string, lines1 []string, lines2 []string) []string {
 		} else if lines0[i] != lines1[i] && lines0[i] == lines2[i] {
 			// Case 1: Content in File 1 differs
 			mergedLines = append(mergedLines, lines1[i])
+			change := "Change: " + lines0[i] + " --> " + lines1[i]
+			proposedChanges = append(proposedChanges, change)
 		} else if lines0[i] == lines1[i] && lines0[i] != lines2[i] {
 			// Case 2: Content in File 2 differs
 			mergedLines = append(mergedLines, lines2[i])
+			change := "change: " + lines0[i] + " --> " + lines2[i]
+			proposedChanges = append(proposedChanges, change)
 		} else if lines0[i] != lines1[i] && lines0[i] != lines2[i] {
 			// Case 3: Content in File 3 differs
 			fmt.Println("Issue!! - In line %d, you need choose between '%s' and '%s'", i, lines1[i], lines2[i])
@@ -58,14 +63,29 @@ func mergeFiles(lines0 []string, lines1 []string, lines2 []string) []string {
 
 	// Case if new tasks were appended
 	additionalLines := lines1[(minsize):]
-	fmt.Println("Test additional lines 1:", additionalLines)
+	//fmt.Println("additional lines 1:", additionalLines)
 	mergedLines = append(mergedLines, additionalLines...)
+	for _, value := range additionalLines {
+		change := "new: " + value
+		proposedChanges = append(proposedChanges, change)
+	}
 
 	additionalLines = lines2[(minsize):]
-	fmt.Println("Test additional lines 2:", additionalLines)
+	//fmt.Println("additional lines 2:", additionalLines)
 	mergedLines = append(mergedLines, additionalLines...)
+	for _, value := range additionalLines {
+		change := "new: " + value
+		proposedChanges = append(proposedChanges, change)
+	}
 
-	return mergedLines
+	return mergedLines, proposedChanges
+}
+
+func printTxt(lines []string) {
+	for _, value := range lines {
+		fmt.Println(value)
+	}
+
 }
 
 func main() {
@@ -75,11 +95,19 @@ func main() {
 	lines1 := openFile("todo.txt")
 	lines2 := openFile("todo.conflict.txt")
 
-	fmt.Println("todo.backup: ", lines0)
-	fmt.Println("todo.txt: ", lines1)
-	fmt.Println("todo.conflict: ", lines2)
+	fmt.Println("-- todo.backup: ")
+	printTxt(lines0)
+	fmt.Println("-- todo.txt: ")
+	printTxt(lines1)
+	fmt.Println("-- todo.conflict: ")
+	printTxt(lines2)
 
-	fmt.Println("merged: ", mergeFiles(lines0, lines1, lines2))
+	mergedLines, proposedChanges := mergeFiles(lines0, lines1, lines2)
+
+	fmt.Println("-- Proposed Changes:")
+	printTxt(proposedChanges)
+
+	fmt.Println("File would look like this: ", mergedLines)
 
 	os.Exit(0)
 }
