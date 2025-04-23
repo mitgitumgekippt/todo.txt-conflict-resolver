@@ -88,10 +88,41 @@ func printTxt(lines []string) {
 
 }
 
+func printHelp() {
+
+}
+
 func main() {
+	args := os.Args
+	var run_dry bool = false
+	var run_verbose bool = false
+	var run_force bool = false
+	for _, argument := range args {
+		switch argument {
+		case "--dry":
+			// If this option is selected, no file is altered
+			run_dry = true
+		case "--init":
+			//Initializes the common base-point
+			// runInit()
+		case "--verbose":
+			//show what is done (show proposed changes)
+			run_verbose = true
+		case "--force":
+			//force changes when it is unclear (multiple changes)
+			run_force = true
+		case "--help":
+			printHelp()
+		default:
+			run_dry = false
+			run_force = false
+			run_verbose = false
+		}
+	}
+
 	fmt.Println("Start merging...")
 
-	lines0 := openFile(".todo.mergebackup.txt")
+	lines0 := openFile(".todo.mergebackup.txt") // wenn kein Init: fragen ob trotzdem gemerged werden soll
 	lines1 := openFile("todo.txt")
 	lines2 := openFile("todo.conflict.txt")
 
