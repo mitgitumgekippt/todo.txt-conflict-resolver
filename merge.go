@@ -89,7 +89,18 @@ func printTxt(lines []string) {
 }
 
 func printHelp() {
+	fmt.Println(`usage: merge-todoconflict [OPTIONS] FILE1 FILE2 [FILE3 ...]
 
+Merges two or more todo.txt files into a single unified version.
+
+Positional arguments:
+  FILE               Paths to the conflict files to be merged (at least two)
+
+Options:
+  --dry              Perform a dry run without altering any file
+  --force            Overwrite conflicts with the most recent entry (aka if every file has a different entry for the same todo)
+  --verbose          Shows the file contents and file changes
+  --help             Show this help message and exit`)
 }
 
 func main() {
