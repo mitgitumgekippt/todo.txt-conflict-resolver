@@ -129,7 +129,7 @@ func writeToFile(content []string, fileName string) {
 
 func main() {
 	args := os.Args
-	args = append(args[1:], "")
+	args = args[1:]
 	var run_dry bool = false
 	var run_verbose bool = false
 	//var run_force bool = false
