@@ -58,6 +58,7 @@ func mergeFiles(lines0 []string, lines1 []string, lines2 []string) ([]string, []
 			proposedChanges = append(proposedChanges, change)
 		} else if lines0[i] != lines1[i] && lines0[i] != lines2[i] {
 			// Case 3: Content in File 3 differs
+			// TODO: force change when option is choosen
 			fmt.Println("Issue!! - In line %d, you need choose between '%s' and '%s'", i, lines1[i], lines2[i])
 		}
 	}
@@ -129,7 +130,7 @@ func writeToFile(content []string, fileName string) {
 
 func main() {
 	args := os.Args
-	args = args[1:]
+	args = args[1:] // stops deletion of binary
 	var run_dry bool = false
 	var run_verbose bool = false
 	//var run_force bool = false
@@ -167,7 +168,9 @@ func main() {
 			//run_check = false
 		}
 	}
-	fmt.Println("arguments:", file_names)
+
+	//TODO use file_names
+	file_names = []string{"todo.txt", "todo.txt.conflict"}
 
 	if run_init {
 		// TODO
@@ -180,9 +183,9 @@ func main() {
 
 	fmt.Println("Start merging...")
 
-	lines0 := openFile(".todo.mergebackup.txt") // wenn kein Init: fragen ob trotzdem gemerged werden soll
-	lines1 := openFile("todo.txt")
-	lines2 := openFile("todo.conflict.txt")
+	lines0 := openFile(".todo.txt.mergebackup") // TODO wenn kein Init: fragen ob trotzdem gemerged werden soll
+	lines1 := openFile(file_names[0])
+	lines2 := openFile(file_names[1])
 
 	mergedLines, proposedChanges := mergeFiles(lines0, lines1, lines2)
 
@@ -227,7 +230,7 @@ func main() {
 			fmt.Println("Write to file ...")
 		}
 		writeToFile(mergedLines, ".todo.txt.mergebackup")
-		writeToFile(mergedLines, "todo.txt")
+		writeToFile(mergedLines, file_names[0])
 	}
 	os.Exit(0)
 }
