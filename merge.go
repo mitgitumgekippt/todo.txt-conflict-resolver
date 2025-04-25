@@ -102,7 +102,7 @@ Options:
   --double-check 	 Confirm the changes before writing them. Implies --verbose. Overrides --dry.
   --dry              Perform a dry run without altering any file
   --force            Overwrite conflicts with the most recent entry (aka if every file has a different entry for the same todo)
-  --init			 Initializes the common base point. If multiple files names are specified, then the first one is taken.
+  --init			 Initializes the common base point. If multiple files names are specified, then the first one is taken. Stops after.
   --verbose          Shows the file contents and file changes
   --help             Show this help message and exit`)
 }
@@ -172,24 +172,27 @@ func main() {
 	//TODO use file_names
 	file_names = []string{"todo.txt", "todo.txt.conflict"}
 
-	if run_init {
-		// TODO
-		// check for existing backup and ask
-		// get content
-		// if verbose ...
-		// if dry ...
-		// write to file
-	}
-
-	fmt.Println("Start merging...")
-
 	lines0 := openFile(".todo.txt.mergebackup") // TODO wenn kein Init: fragen ob trotzdem gemerged werden soll
 	lines1 := openFile(file_names[0])
 	lines2 := openFile(file_names[1])
 
+	if run_init {
+		if run_verbose {
+			fmt.Println("Start init...")
+			fmt.Println("-- todo.txt: ")
+			printTxt(lines1)
+			fmt.Println("Writing init-file")
+		}
+		if !run_dry {
+			writeToFile(lines1, ".todo.txt.mergebackup")
+		}
+		os.Exit(0)
+	}
+
 	mergedLines, proposedChanges := mergeFiles(lines0, lines1, lines2)
 
 	if run_verbose {
+		fmt.Println("Start merging...")
 		fmt.Println("-- todo.backup: ")
 		printTxt(lines0)
 		fmt.Println("-- todo.txt: ")
