@@ -12,6 +12,9 @@ func openFile(filename string) []string {
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
+		if err.Error() == "open .todo.txt.mergebackup: no such file or directory" {
+			fmt.Println("You should run ./merge --init FILE1 first. For help, run with --help .")
+		}
 		os.Exit(1)
 	}
 	defer file.Close() // Ensure the file is closed when the function exits
@@ -94,7 +97,9 @@ func printTxt(lines []string) {
 func printHelp() {
 	fmt.Println(`usage: merge-todoconflict [OPTIONS] FILE1 FILE2 [FILE3 ...]
 
-Merges two or more todo.txt files into a single unified version.
+Merges two or more todo.txt files into a single unified version. Needed to be run with --init, before any merging can be done.
+The merging algorythm is similar to the one of git, but with some assumptions:
+- No line was deleted
 
 Positional arguments:
   FILE               Paths to the conflict files to be merged (at least two)
@@ -155,7 +160,7 @@ func main() {
 			run_init = true
 		case "--force":
 			//force changes when it is unclear (multiple changes)
-			//vllt skippen von fragen bei init und double check TODO
+			//vllt skippen von fragen bei init und double check TODO (soft force and hard force)
 			//run_force = true
 		case "--verbose":
 			//show what is done (show proposed changes)
