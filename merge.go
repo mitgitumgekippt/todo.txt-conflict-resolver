@@ -106,12 +106,30 @@ Options:
   --help             Show this help message and exit`)
 }
 
-func writeToFile(content []string, filename string) {
-	fmt.Println("TODO: imprelement writing and deleting old files and make backup")
+func writeToFile(content []string, fileName string) {
+	// Create the file
+	file, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println("Error creating file:", err)
+		os.Exit(1)
+	}
+
+	// Write content to the file
+	for index, line := range content {
+		_, err = file.WriteString(line + "\n")
+		if err != nil {
+			fmt.Println("Error writing in line %d to file: %s", index, err)
+			os.Exit(1)
+		}
+	}
+
+	// Close the file
+	defer file.Close()
 }
 
 func main() {
 	args := os.Args
+	args = append(args[1:], "")
 	var run_dry bool = false
 	var run_verbose bool = false
 	//var run_force bool = false
@@ -149,6 +167,7 @@ func main() {
 			//run_check = false
 		}
 	}
+	fmt.Println("arguments:", file_names)
 
 	if run_init {
 		// TODO
@@ -195,10 +214,20 @@ func main() {
 	}
 
 	if !run_dry {
-		// TODO
-		// writeBackup
-		// writetodotxt writeToFile(mergedLines)
-		// delete conflict
+		// delete old files
+		for _, filename := range file_names {
+			os.Remove(filename)
+		}
+		if run_verbose {
+			fmt.Println("Delete old files...")
+		}
+
+		// Write new files
+		if run_verbose {
+			fmt.Println("Write to file ...")
+		}
+		writeToFile(mergedLines, ".todo.txt.mergebackup")
+		writeToFile(mergedLines, "todo.txt")
 	}
 	os.Exit(0)
 }
