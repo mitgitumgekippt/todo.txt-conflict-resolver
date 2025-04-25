@@ -59,7 +59,8 @@ func mergeFiles(lines0 []string, lines1 []string, lines2 []string) ([]string, []
 		} else if lines0[i] != lines1[i] && lines0[i] != lines2[i] {
 			// Case 3: Content in File 3 differs
 			// TODO: force change when option is choosen
-			fmt.Println("Issue!! - In line %d, you need choose between '%s' and '%s'", i, lines1[i], lines2[i])
+			fmt.Printf("Issue!! - In line %d, you need choose between '%s' and '%s'! Resolve issue and run again.\n", i, lines1[i], lines2[i])
+			os.Exit(1)
 		}
 	}
 
@@ -119,7 +120,7 @@ func writeToFile(content []string, fileName string) {
 	for index, line := range content {
 		_, err = file.WriteString(line + "\n")
 		if err != nil {
-			fmt.Println("Error writing in line %d to file: %s", index, err)
+			fmt.Printf("Error writing in line %d to file: %s", index, err)
 			os.Exit(1)
 		}
 	}
