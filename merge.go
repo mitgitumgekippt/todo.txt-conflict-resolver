@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func openFile(filename string) []string {
@@ -97,38 +98,65 @@ Positional arguments:
   FILE               Paths to the conflict files to be merged (at least two)
 
 Options:
+  --double-check 	 Confirm the changes before writing them. Implies --verbose. Overrides --dry.
   --dry              Perform a dry run without altering any file
   --force            Overwrite conflicts with the most recent entry (aka if every file has a different entry for the same todo)
+  --init			 Initializes the common base point. If multiple files names are specified, then the first one is taken.
   --verbose          Shows the file contents and file changes
   --help             Show this help message and exit`)
+}
+
+func writeToFile(content []string, filename string) {
+	fmt.Println("TODO: imprelement writing and deleting old files and make backup")
 }
 
 func main() {
 	args := os.Args
 	var run_dry bool = false
 	var run_verbose bool = false
-	var run_force bool = false
+	//var run_force bool = false
+	var run_check bool = false
+	var run_init bool = false
+	var file_names []string
 	for _, argument := range args {
 		switch argument {
+		case "--double-check":
+			// Show changes and confirm before writing the changes
+			run_verbose = true
+			run_check = true
 		case "--dry":
 			// If this option is selected, no file is altered
 			run_dry = true
+		case "--help":
+			printHelp()
+			os.Exit(0) // runInit()
 		case "--init":
 			//Initializes the common base-point
-			// runInit()
+			run_init = true
+		case "--force":
+			//force changes when it is unclear (multiple changes)
+			//vllt skippen von fragen bei init und double check TODO
+			//run_force = true
 		case "--verbose":
 			//show what is done (show proposed changes)
 			run_verbose = true
-		case "--force":
-			//force changes when it is unclear (multiple changes)
-			run_force = true
-		case "--help":
-			printHelp()
+
 		default:
-			run_dry = false
-			run_force = false
-			run_verbose = false
+			file_names = append(file_names, argument)
+			//run_dry = false
+			//run_force = false
+			//run_verbose = false
+			//run_check = false
 		}
+	}
+
+	if run_init {
+		// TODO
+		// check for existing backup and ask
+		// get content
+		// if verbose ...
+		// if dry ...
+		// write to file
 	}
 
 	fmt.Println("Start merging...")
@@ -137,19 +165,40 @@ func main() {
 	lines1 := openFile("todo.txt")
 	lines2 := openFile("todo.conflict.txt")
 
-	fmt.Println("-- todo.backup: ")
-	printTxt(lines0)
-	fmt.Println("-- todo.txt: ")
-	printTxt(lines1)
-	fmt.Println("-- todo.conflict: ")
-	printTxt(lines2)
-
 	mergedLines, proposedChanges := mergeFiles(lines0, lines1, lines2)
 
-	fmt.Println("-- Proposed Changes:")
-	printTxt(proposedChanges)
+	if run_verbose {
+		fmt.Println("-- todo.backup: ")
+		printTxt(lines0)
+		fmt.Println("-- todo.txt: ")
+		printTxt(lines1)
+		fmt.Println("-- todo.conflict: ")
+		printTxt(lines2)
+		fmt.Println("-- Proposed Changes:")
+		printTxt(proposedChanges)
+		fmt.Println("File would look like this: ", mergedLines)
 
-	fmt.Println("File would look like this: ", mergedLines)
+		if run_check {
+			fmt.Println("Do you want confirm the changes? (y/n)")
+			reader := bufio.NewReader(os.Stdin)
+			input, _ := reader.ReadString('\n')
+			input = strings.TrimSpace(strings.ToLower(input))
 
+			if input == "y" || input == "yes" {
+				fmt.Println("Continuing...")
+				run_dry = false
+			} else {
+				fmt.Println("Exiting.")
+				run_dry = true
+			}
+		}
+	}
+
+	if !run_dry {
+		// TODO
+		// writeBackup
+		// writetodotxt writeToFile(mergedLines)
+		// delete conflict
+	}
 	os.Exit(0)
 }
