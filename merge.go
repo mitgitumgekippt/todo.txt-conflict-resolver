@@ -156,7 +156,7 @@ func main() {
 	//var run_force bool = false
 	var run_check bool = false
 	var run_init bool = false
-	var file_names []string
+	var fileNames []string
 	for _, argument := range args {
 		switch argument {
 		case "--double-check":
@@ -181,7 +181,7 @@ func main() {
 			run_verbose = true
 
 		default:
-			file_names = append(file_names, argument)
+			fileNames = append(fileNames, argument)
 			//run_dry = false
 			//run_force = false
 			//run_verbose = false
@@ -189,21 +189,21 @@ func main() {
 		}
 	}
 
-	if len(file_names) == 0 {
+	if len(fileNames) == 0 {
 		fmt.Println("Error: Please specify a base file name. Consult --help if instructions are unclear.")
 		os.Exit(1)
-	} else if len(file_names) == 1 {
+	} else if len(fileNames) == 1 {
 		fmt.Println("Searching for filenames")
-		file_names = findFiles(file_names[0])
-		fmt.Println(file_names)
+		fileNames = findFiles(fileNames[0])
+		fmt.Println(fileNames)
 		// TODO: change variable names according to naming convention in go
 	}
-	//TODO use file_names
-	file_names = []string{"todo.txt", "todo.txt.conflict"}
+	//TODO use fileNames
+	fileNames = []string{"todo.txt", "todo.txt.conflict"}
 
 	lines0 := openFile(".todo.txt.mergebackup") // TODO wenn kein Init: fragen ob trotzdem gemerged werden soll
-	lines1 := openFile(file_names[0])
-	lines2 := openFile(file_names[1])
+	lines1 := openFile(fileNames[0])
+	lines2 := openFile(fileNames[1])
 
 	if run_init {
 		if run_verbose {
@@ -250,7 +250,7 @@ func main() {
 
 	if !run_dry {
 		// delete old files
-		for _, filename := range file_names {
+		for _, filename := range fileNames {
 			os.Remove(filename)
 		}
 		if run_verbose {
@@ -262,7 +262,7 @@ func main() {
 			fmt.Println("Write to file ...")
 		}
 		writeToFile(mergedLines, ".todo.txt.mergebackup")
-		writeToFile(mergedLines, file_names[0])
+		writeToFile(mergedLines, fileNames[0])
 	}
 	os.Exit(0)
 }
