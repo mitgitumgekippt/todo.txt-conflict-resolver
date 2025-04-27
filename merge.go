@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -100,6 +101,7 @@ func printHelp() {
 Merges two or more todo.txt files into a single unified version. Needed to be run with --init, before any merging can be done.
 The merging algorythm is similar to the one of git, but with some assumptions:
 - No line was deleted
+If only one filename is given, it searches for possible conflicting files by itself.
 
 Positional arguments:
   FILE               Paths to the conflict files to be merged (at least two)
@@ -132,6 +134,18 @@ func writeToFile(content []string, fileName string) {
 
 	// Close the file
 	defer file.Close()
+}
+
+//TODO: function which handles printing if verbose is active
+
+func findFiles(baseFileName string) []string {
+	pattern := baseFileName + "*conflict*"
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		fmt.Printf("There was an error while looking for files: %s \n", err)
+		os.Exit(1)
+	}
+	return files
 }
 
 func main() {
@@ -175,6 +189,15 @@ func main() {
 		}
 	}
 
+	if len(file_names) == 0 {
+		fmt.Println("Error: Please specify a base file name. Consult --help if instructions are unclear.")
+		os.Exit(1)
+	} else if len(file_names) == 1 {
+		fmt.Println("Searching for filenames")
+		file_names = findFiles(file_names[0])
+		fmt.Println(file_names)
+		// TODO: change variable names according to naming convention in go
+	}
 	//TODO use file_names
 	file_names = []string{"todo.txt", "todo.txt.conflict"}
 
@@ -195,10 +218,10 @@ func main() {
 		os.Exit(0)
 	}
 
+	fmt.Println("Start merging...")
 	mergedLines, proposedChanges := mergeFiles(lines0, lines1, lines2)
 
 	if run_verbose {
-		fmt.Println("Start merging...")
 		fmt.Println("-- todo.backup: ")
 		printTxt(lines0)
 		fmt.Println("-- todo.txt: ")
