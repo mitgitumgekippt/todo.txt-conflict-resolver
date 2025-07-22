@@ -1,12 +1,37 @@
-# todo.txt-conflict-resolver
+<!-- Icon -->
+<p align="center">
+    <img src="icon.png" height="173"/></a>
+</p>
+
+<!-- Name of Project -->
+<h1 align="center">todo.txt-conflict-resolver</h1>
+
+<!-- Oneline, which explains purpose -->
+<h4 align="center">
+    Tool for automatically resolving sync conflicts of todo.txt files
+</h4>
+
+
+<div align="center">
+    <a href="https://moritz-mander.de">My Home Page</a> |
+    <a href="https://moritz-mander.de/">My Blog</a> |
+    (Documentation)
+</div>
+<br>
+
+ ![Maintained](https://img.shields.io/badge/Maintained-yes-yellow)
+ ![Documentation](https://img.shields.io/badge/Documentation-yes-blue)
 
 > [!WARNING]
-> This tool is still under development and not yet production-ready. Features and behavior are subject to change. Double-check all results and report any bugs. Because of that, this tool generates a file named ".todo.txt.backup", which contains the content of the original "todo.txt" file and it does not automatically delete the conflicted files yet.
+> This tool is still under development and is far from being production-ready. Features and behavior are subject to change. Double-check all results and report any bugs. To recover in case of a fatal bug: A backup called ".todo.txt.backup" is created, which contains the content of the original "todo.txt" file. Additionally it does not automatically delete the conflicted files yet.
 
 ## Project Description
 
 This Go-script provides a basic command-line interface for merging [todo.txt](https://github.com/todotxt/todo.txt) conflict files, if it's used with [syncthing](https://syncthing.net/) (or similar file synchronization tools).
-Please note that it currently uses a custom sync algorithm that works for my personal needs and which assumes some assumptions. See the [Limitations](#Limitations) section for more details.
+
+
+> [!WARNING]
+> Please note that it currently uses a custom sync algorithm that works for my personal needs and which assumes some assumptions. See the [Limitations](#Limitations) section for more details. I currently work on a implementation based on the 3way-merge-algorithm of git, which resolves most of the Limitations.
 
 #### Background
 I am using [todo.txt](https://github.com/todotxt/todo.txt) to organise my tasks.
@@ -19,7 +44,6 @@ Clone the project and build the project using
 ```go
 go build
 ```
-
 Then move the binary to the same location as your todo.txt file.
 
 > [!IMPORTANT]
@@ -56,3 +80,14 @@ The following options are available:
 
 > [!NOTE]
 > If you try to merge two files but a task was delted, the tool will think each line after the deleted line was altered.
+
+
+## Author
+Moritz Mander
+
+- [My Website](https://moritz-mander.de/)
+- [My Blog](https://moritz-mander.de/blog/)
+- [Github](https://github.com/mitgitumgekippt)
+
+## License
+This project is licensed by the Do What The Fuck You Want To Public License (WTFPL). For more details, check the LICENSE file or [wtfpl.net](https://www.wtfpl.net/about/)
